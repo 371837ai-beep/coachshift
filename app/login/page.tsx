@@ -56,4 +56,14 @@ export default function LoginPage() {
   )
 }
 
-const inpStyle = { background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, padding: 12, color: '#c9d1d9', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }
+const inpStyle: React.CSSProperties = { 
+  background: '#0d1117', 
+  border: '1px solid #30363d', 
+  borderRadius: 6, 
+  padding: 12, 
+  color: '#c9d1d9', 
+  fontSize: 14, 
+  outline: 'none', 
+  width: '100%', 
+  boxSizing: 'border-box' 
+}
