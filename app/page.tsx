@@ -1,31 +1,41 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { supabase, SubRequest, Coach, getMyCoach } from '@/lib/supabase'
 
-export default function LoginPage() {
+export default function MainPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [coach, setCoach] = useState<Coach | null>(null)
+  const [requests, setRequests] = useState<SubRequest[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) alert(error.message)
-    else router.push('/')
+  const fetchRequests = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('sub_requests')
+      .select('*, sub_responses(id, user_id, user_name, choice)')
+      .eq('status', 'open')
+      .order('shift_date', { ascending: true })
+    if (error) { console.error(error); return }
+    setRequests((data ?? []) as SubRequest[])
     setLoading(false)
-  }
+  }, [])
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>ログイン</h2>
-      <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-        <button type="submit" disabled={loading}>ログイン</button>
-      </form>
-    </div>
-  )
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) { router.push('/login'); return }
+      const me = await getMyCoach()
+      if (!me) { router.push('/login'); return }
+      setCoach(me)
+      fetchRequests()
+    })
+    const channel = supabase
+      .channel('main-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sub_responses' }, fetchRequests)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sub_requests' }, fetchRequests)
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [fetchRequests, router])
+
+  if (loading) return <div>読み込み中...</div>
+  return <div><h1>代理募集リスト</h1></div>
 }
