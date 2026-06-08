@@ -1,11 +1,13 @@
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+
+export default function MainPage() {
   return (
-    <html lang="ja">
-      <body>{children}</body>
-    </html>
+    <div style={{ padding: 20 }}>
+      <h1>代理募集リスト</h1>
+      <p>読み込み中...</p>
+    </div>
   )
 }
