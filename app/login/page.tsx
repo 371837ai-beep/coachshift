@@ -7,7 +7,7 @@ export default function LoginPage() {
   const router = useRouter()
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
-  const [password = '', setPassword] = useState('')
+  const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -39,7 +39,7 @@ export default function LoginPage() {
         <h2 style={{ color: '#c9d1d9', textAlign: 'center', margin: '0 0 24px' }}>{isSignUp ? 'コーチ新規登録' : 'コーチログイン'}</h2>
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {isSignUp && (
-            <input type="text" placeholder="名前（例：岩崎）" value={name} onChange={e => setName(e.target.value)} required style={inpStyle} />
+            <input type="text" placeholder="名前" value={name} onChange={e => setName(e.target.value)} required style={inpStyle} />
           )}
           <input type="email" placeholder="メールアドレス" value={email} onChange={e => setEmail(e.target.value)} required style={inpStyle} />
           <input type="password" placeholder="パスワード" value={password} onChange={e => setPassword(e.target.value)} required style={inpStyle} />
@@ -56,4 +56,4 @@ export default function LoginPage() {
   )
 }
 
-const inpStyle = { background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, padding: 12, color: '#c9d1d9', fontSize: 14, outline: 'none' }
+const inpStyle = { background: '#0d1117', border: '1px solid #30363d', borderRadius: 6, padding: 12, color: '#c9d1d9', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }
